@@ -33,7 +33,15 @@ RUN yum install -y http://mirror.webtatic.com/yum/el6/latest.rpm http://dl.fedor
 	tar zxvf v2.0.14.tar.gz &&\
 	cp /profiler-2.0.14/Tideways.php /usr/lib64/php/modules &&\
 	echo -e "extension=tideways.so\ntideways.auto_prepend_library=0" > /etc/php.d/tideways.ini &&\
-	echo -e "zend_extension=opcache.so\nopcache.enable=1\nopcache.memory_consumption=128\nopcache.interned_strings_buffer=8\nopcache.max_accelerated_files=4000\nopcache.blacklist_filename=/etc/php.d/opcache*.blacklist\nopcache.huge_code_pages=1\n" > /etc/php.d/opcache.ini
+	echo -e "zend_extension=opcache.so\nopcache.enable=1\nopcache.memory_consumption=128\nopcache.interned_strings_buffer=8\nopcache.max_accelerated_files=4000\nopcache.blacklist_filename=/etc/php.d/opcache*.blacklist\nopcache.huge_code_pages=1\n" > /etc/php.d/opcache.ini &&\
+	git clone https://github.com/derickr/vld.git vld &&\
+	cd vld &&\
+	phpize &&\
+	./configure --with-php-config=/usr/bin/php-config --enable-vld &&\
+	make install &&\
+	echo extension=vld.so > /etc/php.d/vld.ini &&\
+	cd ../ &&\
+	rm -rf vld/
 
 COPY ./nginx/ /etc/nginx/
 COPY ./run.sh /run.sh
