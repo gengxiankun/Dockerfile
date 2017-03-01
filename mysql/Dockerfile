@@ -1,7 +1,4 @@
-#mysql
-#使用基于网易的国内cnetos6.5镜像
 FROM hub.c.163.com/public/centos:6.5
-MAINTAINER xiankun.geng
 
 #安装mysql服务
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm &&\

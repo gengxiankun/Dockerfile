@@ -1,5 +1,3 @@
-#go
-#使用基于网易的国内cnetos6.5镜像
 FROM hub.c.163.com/public/centos:6.5
 
 COPY ./go1.8.linux-amd64.tar.gz /

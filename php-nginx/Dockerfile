@@ -1,5 +1,4 @@
 FROM hub.c.163.com/public/centos:6.5
-MAINTAINER xiankun.geng
 
 RUN yum install -y http://mirror.webtatic.com/yum/el6/latest.rpm http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm &&\
 	touch /etc/sysconfig/network &&\
@@ -19,7 +18,7 @@ RUN yum install -y http://mirror.webtatic.com/yum/el6/latest.rpm http://dl.fedor
 	rm -rf xdebug-2.4.0rc1.tgz &&\
 	cd wrk/ &&\
 	make &&\
-	ln -s wrk /usr/local/bin/ &&\
+	mv wrk /usr/local/bin/ &&\
 	cd ../ &&\
 	rm -rf wrk/ &&\
 	git clone https://github.com/tideways/php-profiler-extension.git &&\

@@ -1,5 +1,6 @@
 php-nginx/nginx/sites-enabled/
 php-nginx/.DS_Store
 mysql/DS_Store
+mysql/mysql_data
 go/.DS_Store
 node.js/.DS_Store
