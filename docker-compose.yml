@@ -1,0 +1,33 @@
+version: '2'
+services:
+  mysql:
+    image: hub.c.163.com/library/mysql
+    ports: 
+        - "3306"
+    expose: 
+        - "3306"
+    volumes: 
+        - ~/data/mysql-data/:/mysql-data
+    environment: 
+        - MYSQL_ROOT_PASSWORD=root
+  phpfpm:
+    build: ./php7.1/
+    ports:
+        - "9000"
+    expose:
+        - "9000"
+    volumes:
+        - ~/data/www/:/www/:ro
+    links:
+        - mysql:mysql
+  nginx_tengine_80:
+    build: ./tengine/
+    ports: 
+        - "80:80"
+    expose: 
+        - "80"
+    volumes_from:
+        - phpfpm
+    links:
+        - mysql:mysql
+        - phpfpm:phpfpm
