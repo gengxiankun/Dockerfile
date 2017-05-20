@@ -1,0 +1,17 @@
+redis:
+	docker run -p 6379:6379 -v $PWD/data:/data  -d --name redis redis redis-server --appendonly yes
+
+logstash:
+	agent:
+		docker build -t logstash_agent logstash_agent/
+		docker run -d -v ~/$PWD/nginx_logs/:/nginx_logs --link redis:redis --name logstash_agent logstash_agent
+	indexer:
+		docker build -t logstash_indexer logstash_indexer/
+
+elasticsearch:
+	#docker run -d -p 9200:9200 --name="elasticsearch" elasticsearch:2.3.5
+	docker run -d -p 9200:9200 --name="elasticsearch" elasticsearch
+
+kibana:
+	docker run --link elasticsearch:elasticsearch --name kibana -d -p 5601:5601 kibana
+

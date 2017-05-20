@@ -7,7 +7,7 @@ services:
     expose: 
         - "3306"
     volumes: 
-        - ~/data/mysql-data/:/mysql-data
+        - /$PWD/mysql_data/:/mysql_data
     environment: 
         - MYSQL_ROOT_PASSWORD=root
   phpfpm:
@@ -17,7 +17,7 @@ services:
     expose:
         - "9000"
     volumes:
-        - ~/data/www/:/www/:ro
+        - /$PWD/www/:/www/:ro
     links:
         - mysql:mysql
   nginx_tengine_80:
@@ -28,6 +28,8 @@ services:
         - "80"
     volumes_from:
         - phpfpm
+    volumes:
+        - /$PWD/nginx_logs/:/nginx_logs/:ro
     links:
         - mysql:mysql
         - phpfpm:phpfpm
