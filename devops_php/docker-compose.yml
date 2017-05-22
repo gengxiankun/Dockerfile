@@ -17,7 +17,7 @@ services:
     expose:
         - "9000"
     volumes:
-        - /$PWD/www/:/www/:ro
+        - /$PWD/www/:/www/
     links:
         - mysql:mysql
   nginx_tengine_80:
