@@ -1,0 +1,45 @@
+version: '2'
+services:
+  redis:
+    images: redis
+    ports: 
+      - "6379:6379"
+    expose:
+      - "6379"
+    volumes:
+      - /$PWD/redis_data/:/data/
+    restart: always
+    command: redis-server --appendonly yes
+  elasticsearch:
+    images: elasticsearch:2.4
+    port: 
+      - "9200:9200"
+    expose:
+      - "9200"
+    restart: always
+  logstash_agent:
+    build: ./logstash_agent/
+    volumes:
+      - /$PWD/nginx_logs/:/nginx_logs/
+    links:
+      - redis:reids
+    environment:
+      - REDIS_HOST=redis
+      - NGINX_PATH="\/nginx_logs\/access.log"
+    restart: always
+  logstash_index:
+    build: ./logstash_indexer/
+    links:
+      - redis:redis
+      - elasticsearch:elasticsearch
+    environment:
+      - REDIS_HOST=redis
+      - ELASTICSEARCH_HOST=elasticsearch
+    restart: always
+  kibana:
+    images: kibana:4.6.4
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch:elasticsearch
+    restart: always
