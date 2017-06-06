@@ -9,8 +9,8 @@ RUN cd /usr/ &&\
 	make install &&\
 	ln -s /usr/local/nginx/conf/ /etc/nginx
 
-COPY ./run.sh /run.sh
+COPY docker-entrypoint.sh /usr/local/bin/
 
 EXPOSE 80
 
-CMD ["/run.sh"]
+CMD ["docker-entrypoint.sh"]

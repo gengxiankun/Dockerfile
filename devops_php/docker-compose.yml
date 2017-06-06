@@ -7,6 +7,7 @@ services:
     expose: 
         - "3306"
     volumes: 
+        - /etc/localtime:/etc/localtime:ro
         - ~/data/mysql_data/:/mysql_data
     environment: 
         - MYSQL_ROOT_PASSWORD=root
@@ -16,6 +17,7 @@ services:
     expose:
         - "9000"
     volumes:
+        - /etc/localtime:/etc/localtime:ro
         - ~/data/www/:/www/
     links:
         - mysql:mysql
@@ -27,6 +29,7 @@ services:
     volumes_from:
         - phpfpm
     volumes:
+        - /etc/localtime:/etc/localtime:ro
         - ~/data/nginx_logs/:/nginx_logs/:ro
     links:
         - mysql:mysql

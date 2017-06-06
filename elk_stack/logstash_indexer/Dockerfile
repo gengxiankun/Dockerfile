@@ -1,5 +1,5 @@
 FROM logstash
 COPY logstash_indexer.conf /etc/logstash/conf.d/
-COPY ./run.sh /run.sh
+COPY docker-entrypoint.sh /usr/local/bin/
 
-CMD ["/run.sh"]
+CMD ["docker-entrypoint.sh"]
