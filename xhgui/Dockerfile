@@ -25,6 +25,8 @@ RUN yum install -y epel-release &&\
 	curl -sS https://getcomposer.org/installer | php &&\
 	php install.php
 
+VOLUME ["/www"]
+
 COPY docker-entrypoint.sh /usr/local/bin/
 
 EXPOSE 9000
