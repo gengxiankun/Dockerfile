@@ -5,7 +5,7 @@ services:
     expose:
       - "6379"
     volumes:
-      - /$PWD/redis_data/:/data/
+      - /path/redis_data/:/data/
     restart: always
     command: redis-server --appendonly yes
   elasticsearch:
@@ -18,7 +18,7 @@ services:
   logstash_agent:
     build: ./logstash_agent/
     volumes:
-      - /$PWD/nginx_logs/:/nginx_logs/
+      - /path/nginx_logs/:/nginx_logs/
     links:
       - redis:reids
     environment:

@@ -13,6 +13,7 @@ RUN yum install -y readline-devel pcre-devel openssl-devel perl wget gcc make &&
     ln -s /opt/openresty/nginx/conf /etc/nginx
 
 EXPOSE 80
+
 COPY docker-entrypoint.sh /usr/local/bin/
 
 CMD ["docker-entrypoint.sh"]
