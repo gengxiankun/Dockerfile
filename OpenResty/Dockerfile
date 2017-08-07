@@ -1,4 +1,4 @@
-FROM centos:7.2.1511
+FROM daocloud.io/library/centos:7.2.1511
 
 RUN yum install -y readline-devel pcre-devel openssl-devel perl wget gcc make &&\
     wget https://openresty.org/download/openresty-1.11.2.3.tar.gz &&\

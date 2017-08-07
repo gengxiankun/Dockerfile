@@ -1,12 +1,12 @@
 version: '2'
 services:
     mysql:
-        image: mysql
+        image: daocloud.io/library/mysql
         expose: 
             - "3306"
         volumes:
             - /etc/localtime:/etc/localtime:ro
-            - /data/docker_data/mysql_3306:/data
+            - ~/data/docker_data/mysql_3306:/data
         environment:
             - MYSQL_ROOT_PASSWORD=root
         restart: always
@@ -16,7 +16,7 @@ services:
             - "9000"
         volumes:
             - /etc/localtime:/etc/localtime:ro
-            - /data/docker_data/php-fpm_9000:/data
+            - ~/data/docker_data/php-fpm_9000:/data
         restart: always
     nginx:
         build: ./OpenResty/
