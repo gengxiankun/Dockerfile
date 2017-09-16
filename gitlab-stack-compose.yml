@@ -21,19 +21,19 @@ services:
 		volumes:
 			- /etc/localtime:/etc/localtime:ro
 			- /data/docker_data/gitlab/data:/home/git/data
-		ports: 
-     	- "2200:22"
-     	- "8080:80"
-    environment:
-    	- GITLAB_SSH_PORT=2200
-    	- GITLAB_BACKUPS=daily
-    	- GITLAB_HOST=
-    	- GITLAB_SIGNUP=true
-    	- GITLAB_GRAVATAR_ENABLED=false
-    	- SMTP_DOMAIN=
-    	- SMTP_HOST=
-    	- SMTP_PORT=
-    	- SMTP_USER=
-    	- SMTP_PASS=
-    links:
-    	- postgresql:postgresql
+		ports:
+			- "2200:22"
+			- "8080:80"
+		environment:
+			- GITLAB_SSH_PORT=2200
+			- GITLAB_BACKUPS=daily
+			- GITLAB_HOST=
+			- GITLAB_SIGNUP=true
+			- GITLAB_GRAVATAR_ENABLED=false
+			- SMTP_DOMAIN=
+			- SMTP_HOST=
+			- SMTP_PORT=
+			- SMTP_USER=
+			- SMTP_PASS=
+		links:
+			- postgresql:postgresql
