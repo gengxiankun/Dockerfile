@@ -2,29 +2,37 @@ version: '2'
 services:
     mysql:
         image: daocloud.io/library/mysql
-        expose: 
+        restart: always
+        expose:
             - "3306"
+        ports: 
+            - "3306:3306"
         volumes:
             - /etc/localtime:/etc/localtime:ro
-            - ~/data/docker_data/mysql_3306:/data
+            - ~/data/docker_data/mysql_3306/data:/data
+            - ~/data/docker_data/mysql_3306/var-lib-mysql:/var/lib/mysql
         environment:
             - MYSQL_ROOT_PASSWORD=root
         restart: always
     php-fpm:
         build: ./PHP7.1/
+        restart: always
         expose:
             - "9000"
         volumes:
             - /etc/localtime:/etc/localtime:ro
             - ~/data/docker_data/php-fpm_9000:/data
-        restart: always
+        links:
+            - mysql:mysql
     nginx:
         build: ./OpenResty/
+        restart: always
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - /etc/localtime:/etc/localtime:ro
+            - ~/data/docker_data/nginx_80_443/conf.d:/etc/nginx/conf.d
         volumes_from:
             - php-fpm
         links:

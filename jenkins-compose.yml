@@ -1,0 +1,11 @@
+version: '2'
+services:
+  jenkins:
+    images: daocloud.io/daocloud/jenkins
+    ports: 
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - /data/docker_data/jenkins:/var/jenkins_home
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
