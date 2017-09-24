@@ -1,11 +1,14 @@
 version: '2'
 services:
   jenkins:
-    images: daocloud.io/daocloud/jenkins
+    images: ./Jenkins
     ports: 
-      - "8081:8080"
+      - "8080:8080"
       - "50000:50000"
     volumes:
       - /data/docker_data/jenkins:/var/jenkins_home
+      - $(which php):/usr/bin/php
+      - $(which composer):/usr/bin/composer
+      - /lib64/libpng15.so.15:/lib/x86_64-linux-gnu/libpng15.so.15\
       - /etc/localtime:/etc/localtime:ro
     restart: always
