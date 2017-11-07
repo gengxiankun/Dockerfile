@@ -52,6 +52,19 @@ sed -i "90 s/0/1/g" migrate_common.ph
 ldapadd -x -w ${LDAP_PASSWD} -D "cn=${LDAP_MANAGER},dc=${LDAP_DOMAIN},dc=${LDAP_COM}" -f /root/base.ldif
 
 sleep 5
+ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<EOF
+dn: cn=config 
+changetype: modify
+add: olcDisallows
+olcDisallows: bind_anon
+EOF
+ 
+ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<EOF
+dn: olcDatabase={-1}frontend,cn=config 
+changetype: modify
+add: olcRequires
+olcRequires: authc
+EOF
 kill -INT `cat /run/openldap/slapd.pid`
 sleep 5
 /usr/sbin/slapd -h "ldapi:/// ldap://" -u ldap -d 8
