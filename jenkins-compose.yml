@@ -7,8 +7,4 @@ services:
       - "50000:50000"
     volumes:
       - /data/docker_data/jenkins:/var/jenkins_home
-      - $(which php):/usr/bin/php
-      - $(which composer):/usr/bin/composer
-      - /lib64/libpng15.so.15:/lib/x86_64-linux-gnu/libpng15.so.15\
-      - /etc/localtime:/etc/localtime:ro
     restart: always
