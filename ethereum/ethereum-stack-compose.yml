@@ -11,8 +11,8 @@ services:
         volumes:
             - /etc/localtime:/etc/localtime:ro
         environment:
-	    - PORT=7454
             - NETWORKID=6
+	    - PORT=7454
         restart: always
 
     truffle:
