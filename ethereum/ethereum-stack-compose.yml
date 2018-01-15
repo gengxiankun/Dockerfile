@@ -3,7 +3,7 @@ version: '2'
 services:
 
     ganache:
-		build: ./Ganache/
+	build: ./Ganache/
         expose:
             - "7454"
         ports: 
@@ -19,7 +19,7 @@ services:
         build: ./Truffle/
         volumes:
             - /etc/localtime:/etc/localtime:ro
-			- ~/data/eth/:/data/
+	    - ~/data/eth/:/data/
         links:
             - ganache:ganache
         restart: always
