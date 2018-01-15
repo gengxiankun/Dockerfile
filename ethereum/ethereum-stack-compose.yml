@@ -3,31 +3,29 @@ version: '2'
 services:
 
     ganache:
-    	build: ./Ganache/
+        container_name: ganache
+        build: ./Ganache/
         expose:
             - "7454"
         ports: 
             - "7454:7454"
-        volumes:
-            - /etc/localtime:/etc/localtime:ro
         environment:
             - NETWORKID=6
-	    - PORT=7454
+            - PORT=7454
         restart: always
 
     truffle:
+        container_name: truffle
         build: ./Truffle/
         volumes:
-	    - ~/data/eth/:/data/
-            - /etc/localtime:/etc/localtime:ro
+            - ~/data/ethereum/:/data/
         links:
             - ganache:ganache
         restart: always
 
     geth:
+        container_name: geth
         build: ./Geth/
         restart: always
-        volumes:
-            - /etc/localtime:/etc/localtime:ro
         links:
             - ganache:ganache
