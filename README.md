@@ -1,11 +1,8 @@
 # dockerfiles
 Dockerfiles based on Centos7
 
-## LNMP
-`docker-compose -f LNMP/lnmp-stack-compose.yml up -d`
-### XHGui
-
-## ethereum
-`docker-compose -f ethereum/ethereum-stack-compose.yml up -d`
-
-## LDAP
+## LIST
+- [LNMP](https://github.com/gengxiankun/dockerfiles/tree/master/LNMP)
+- [ethereum](https://github.com/gengxiankun/dockerfiles/tree/master/ethereum)
+- [LDAP](https://github.com/gengxiankun/dockerfiles/tree/master/LDAP)
+- [XHGui](https://github.com/gengxiankun/dockerfiles/tree/master/XHGui)
