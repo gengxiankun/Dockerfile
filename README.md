@@ -1,5 +1,5 @@
 # dockerfiles
-Dockerfiles based on Centos7
+dockerfiles based on Centos7
 
 ## LIST
 - [LNMP](https://github.com/gengxiankun/dockerfiles/tree/master/LNMP)
