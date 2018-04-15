@@ -19,6 +19,7 @@ services:
         build: ./Truffle/
         volumes:
             - ~/data/ethereum/:/data/
+        working_dir: /www
         links:
             - ganache:ganache
         restart: always
