@@ -25,6 +25,7 @@ services:
             - "9000"
         volumes:
             - ./docker_data/php-fpm:/data
+		working_dir: /data
         links:
             - mysql:mysql
 
