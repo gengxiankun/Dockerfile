@@ -11,35 +11,32 @@ services:
         ports: 
             - "3306:3306"
         volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - ~/data/docker_data/mysql_3306/data:/data
-            - ~/data/docker_data/mysql_3306/var-lib-mysql:/var/lib/mysql
+            - ./docker_data/mysql/data:/data
+            - ./docker_data/mysql/var-lib-mysql:/var/lib/mysql
         environment:
             - MYSQL_ROOT_PASSWORD=root
         restart: always
 
     php-fpm:
         container_name: php-fpm
-        build: ./PHP7.1/
+        build: ./PHP/PHP7.1/
         restart: always
         expose:
             - "9000"
         volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - ~/data/docker_data/php-fpm_9000:/data
+            - ./docker_data/php-fpm:/data
         links:
             - mysql:mysql
 
     nginx:
         container_name: nginx
-        build: ./OpenResty/
+        build: ./NGINX/OpenResty/
         restart: always
         ports:
             - "80:80"
             - "443:443"
         volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - ~/data/docker_data/nginx_80_443/conf.d:/etc/nginx/conf.d
+            - ./docker_data/nginx/conf.d:/etc/nginx/conf.d
         volumes_from:
             - php-fpm
         links:

@@ -18,7 +18,7 @@ services:
         container_name: truffle
         build: ./Truffle/
         volumes:
-            - ~/data/ethereum/:/data/
+            - ./docker_data/ethereum/:/data/
         links:
             - ganache:ganache
         restart: always
