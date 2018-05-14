@@ -4,6 +4,9 @@ RUN yum install -y epel-release &&\
 	yum install -y --enablerepo=remi --enablerepo=remi-php71 php php-opcache php-devel php-mbstring php-xml php-zip php-cli php-fpm php-mcrypt php-mysql php-pdo php-curl php-gd php-mysqld php-bcmath openssh-server &&\
 	yum clean all
 
+RUN mkdir -p /run/php-fpm/ &&\
+	touch /run/php-fpm/php-fpm.pid
+
 COPY docker-entrypoint.sh /usr/local/bin/
 
 EXPOSE 9000
