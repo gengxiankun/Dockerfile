@@ -4,6 +4,10 @@ RUN yum install -y epel-release &&\
 	yum install -y --enablerepo=remi --enablerepo=remi-php56 php php-opcache php-devel php-mbstring php-xml php-zip php-cli php-fpm php-mcrypt php-mysql php-pdo php-curl php-gd php-mysqld php-bcmath openssh-server nginx &&\
 	yum clean all
 
+RUN sed -i 's/listen = 127.0.0.1:9000/listen = [::]:9000/p' /etc/php-fpm.d/www.conf &&\
+	sed -i '/listen.allowed_clients = 127.0.0.1/d' /etc/php-fpm.d/www.conf &&\
+	sed -i "s/daemonize = yes/daemonize = no/p" /etc/php-fpm.conf
+
 RUN rpm -ivh https://kojipkgs.fedoraproject.org/packages/http-parser/2.7.1/3.el7/x86_64/http-parser-2.7.1-3.el7.x86_64.rpm &&\
 	yum -y install nodejs openssl &&\
 	npm set registry https://registry.npm.taobao.org &&\

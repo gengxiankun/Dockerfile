@@ -9,7 +9,8 @@ RUN yum install -y readline-devel pcre-devel openssl-devel perl wget gcc make &&
              --without-http_redis2_module \
              --with-http_iconv_module &&\
     make && make install &&\
-    ln -s /opt/openresty/nginx/conf /etc/nginx
+    ln -s /opt/openresty/nginx/conf /etc/nginx &&\
+    sed -i "79a \    include '/etc/nginx/conf.d/*.conf';" nginx.conf
 
 EXPOSE 80
 
