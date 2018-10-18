@@ -6,6 +6,7 @@ RUN yum install -y epel-release &&\
 	yum clean all
 
 RUN curl -sSL https://getcomposer.org/installer | php &&\
-    mv composer.phar /usr/local/bin/composer
+    mv composer.phar /usr/local/bin/composer &&\
+    composer global require fxp/composer-asset-plugin v1.4.2 -vvv
 
 CMD ["/usr/sbin/init"]
