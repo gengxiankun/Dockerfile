@@ -4,7 +4,7 @@ services:
 
     ganache:
         container_name: ganache
-        build: ./Ganache/
+        image: gengxiankun/ganache
         expose:
             - "7454"
         ports: 
@@ -16,9 +16,9 @@ services:
 
     truffle:
         container_name: truffle
-        build: ./Truffle/
+        image: gengxiankun/truffle
         volumes:
-            - ./docker_data/ethereum/:/data/
+            - ../docker-compose_data/ethereum/:/data/
         working_dir: /data
         links:
             - ganache:ganache
@@ -26,7 +26,7 @@ services:
 
     geth:
         container_name: geth
-        build: ./Geth/
+        image: gengxiankun/geth
         restart: always
         links:
             - ganache:ganache
