@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#author: geng xiankun <gengxiankun@himoca.com>
+#usage:
+# deploy SERVER_HOSTS PROJECT_NAME VERSION REGISTRY_AUTH_USER REGISTRY_AUTH_PASSWD REGISTRY_URL TYPE
+
+# 发版库
+RELEASE_LIB='/data/release/'
+# 保留版本数
+KEEP_VERSION_NUM=1
+# 项目运行时目录
+RUNTIME_PATH='/data/runtime/'
+# 代码最终部署路径
+RELEASE_TO='/data/web/'
+
+# 服务器hosts
+SERVER_HOSTS=$1
+# 项目名称
+PROJECT_NAME=$2
+# 发布版本号
+VERSION=$3
+# Docker Registry 授权用户
+REGISTRY_AUTH_USER=$4
+# Docker Registry 授权密码
+REGISTRY_AUTH_PASSWD=$5
+# Docker Registry Url
+REGISTRY_URL=$6
+# 项目类型，默认 'scaffold' 类型
+TYPE=${7:-'scaffold'}
+
+_ln() {
+	host=$1
+
+	case ${TYPE} in
+		'scaffold' )
+			# 持久化runtime
+			echo "[info] [$host] [软链] 检查、创建代码runtime目录"
+			ssh root@${host} "if [ ! -d \"${RUNTIME_PATH}\" ]; then mkdir -vp ${RUNTIME_PATH}; fi"
+			for i in 'admin' 'app' 'pc' 'h5'; do
+				ssh root@${host} "if [ ! -d \"${RUNTIME_PATH}${PROJECT_NAME}/${i}\" ]; then mkdir -vp ${RUNTIME_PATH}${PROJECT_NAME}/${i}; fi"
+				ssh root@${host} "if [ ! -d \"${RUNTIME_PATH}${PROJECT_NAME}/${i}/runtime\" ]; then cp -r ${RELEASE_LIB}${PROJECT_NAME}/${VERSION}/${i}/runtime ${RUNTIME_PATH}${PROJECT_NAME}/${i}/runtime; fi"
+				ssh root@${host} "if [ -d \"${RELEASE_LIB}${PROJECT_NAME}/${VERSION}/${i}/runtime\" ];then rm -rf ${RELEASE_LIB}${PROJECT_NAME}/${VERSION}/${i}/runtime; fi"
+				ssh root@${host} "ln -sfn ${RUNTIME_PATH}${PROJECT_NAME}/${i}/runtime ${RELEASE_LIB}${PROJECT_NAME}/${VERSION}/${i}/"
+			done
+			# 代码最终部署路径检查
+			echo "[info] [$host] [软链] 检查、创建代码最终部署路径"
+			ssh root@${host} "if [ ! -d \"${RELEASE_TO}\" ]; then mkdir -vp ${RELEASE_TO}; fi"
+			# 打软链
+			echo "[info] [$host] [软链] 软链部署"
+    		ssh root@${host} "ln -sfn ${RELEASE_LIB}${PROJECT_NAME}/${VERSION} ${RELEASE_LIB}${PROJECT_NAME}/current-${PROJECT_NAME}.tmp && mv -fT ${RELEASE_LIB}${PROJECT_NAME}/current-${PROJECT_NAME}.tmp ${RELEASE_TO}${PROJECT_NAME}"
+			;;
+	esac
+}
+
+_docker() {
+	host=$1
+
+	case ${TYPE} in
+		'scaffold' )
+			# Docker Registry 验证授权
+			echo "[info] [$host] [docker] Docker Registry 验证授权"
+    		ssh root@${host} "docker login -u ${REGISTRY_AUTH_USER} -p ${REGISTRY_AUTH_PASSWD} ${REGISTRY_URL}"
+
+		    # 重新部署 Docker 容器
+		    echo "[info] [$host] [docker] 重新部署 Docker 容器"
+		    ssh root@${host} "cd ${RELEASE_TO}${PROJECT_NAME}; docker-compose pull; docker-compose rm -fsva; docker-compose up -d"
+			;;
+	esac
+}
+
+OLDIFS=$IFS;IFS=',';for host in $SERVER_HOSTS; do
+	# 创建发布版本文件夹
+	echo "[info] [$host] 创建发布版本文件夹 ${RELEASE_LIB}${PROJECT_NAME}/${VERSION}"
+	ssh root@${host} mkdir -vp ${RELEASE_LIB}${PROJECT_NAME}/${VERSION}
+
+	# 传输压缩包到指定目标机器
+	echo "[info] [$host] 传输压缩包到指定目标机器 ${RELEASE_LIB}${PROJECT_NAME}"
+    scp ${VERSION}.tar.gz root@${host}:${RELEASE_LIB}${PROJECT_NAME}/
+
+    # 解压缩
+    echo "[info] [$host] 解压缩 ${RELEASE_LIB}${PROJECT_NAME}/${VERSION}.tar.gz"
+	ssh root@${host} "tar -zxf ${RELEASE_LIB}${PROJECT_NAME}/${VERSION}.tar.gz -C ${RELEASE_LIB}${PROJECT_NAME}/${VERSION} && rm -rf ${RELEASE_LIB}${PROJECT_NAME}/*.tar.gz"
+
+    # 软链
+    echo "[info] [$host] [软链] starting"; _ln $host; echo "[info] [$host] [软链] ok"
+
+    # 删除老版本
+    echo "[info] [$host] 删除老版本"
+    ssh -T -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false root@${host} "cd ${RELEASE_LIB}${PROJECT_NAME}/ && ls -1rt | tac | awk 'FNR > $KEEP_VERSION_NUM  {print(\$1);}' | xargs -i rm -rf {}"
+
+    # 部署Docker
+    echo "[info] [$host] [docker] starting"; _docker $host; echo "[info] [$host] [docker] ok"
+
+    echo "[success] [$host] 部署成功！"
+done;IFS=$OLDIFS

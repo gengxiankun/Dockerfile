@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+
+VERSION=1.0.0
+BUILD_PATH=/data/build_release/
+WEBSITE_PATH=/data/website/
+KEEP_VERSION_NUM=10
+PROJECT_VERSION=$(date "+%Y_%m_%d_%H_%M_%S")
+PROJECT_NAME=YiiPlus
+SERVER=
+
+function usage() {
+  cat <<-EOF
+
+  Usage: deploy [options] [user@]hostname [command]
+
+  Options:
+
+    -pn, --project-name     项目名
+    -pv, --project-version  项目版本
+    --pre-transmission      传输前置触发任务
+    --post-transmission     传输后置触发任务
+    --pre-release           发布前置触发任务
+    --post-release          发布后置触发任务
+    -b, --build-path        编译环境目录
+    -w, --website-path      网站目录
+    -n, --keep-version-num  保留版本数
+    -c, --chdir             更改工作目录
+    -v, --version           版本信息
+    -h, --help              帮助信息
+
+  Commands:
+
+    transmission            传输代码
+    release                 发布项目
+EOF
+}
+
+function abort() {
+  echo
+  echo "  $@" 1>&2
+  echo
+  exit 1
+}
+
+function log() {
+  time=$(date "+%Y-%m-%d %H:%M:%S")
+  echo " [${time}] $@"
+}
+
+function transmission() {
+  # 前置触发任务
+  test -n "$pre_transmission" && ssh ${SERVER} ${pre_transmission}
+
+  ssh ${SERVER} "mkdir -vp ${BUILD_PATH}${PROJECT_NAME}/${PROJECT_VERSION}"
+  log "[${SERVER}] [${PROJECT_NAME}] [${PROJECT_VERSION}] 检查目录和权限，工作空间的准备, 每一个版本都单独开辟一个工作空间，防止代码污染......OK."
+  scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false -r ./ ${SERVER}:${BUILD_PATH}${PROJECT_NAME}/${PROJECT_VERSION}
+  log "[${SERVER}] [${PROJECT_NAME}] [${PROJECT_VERSION}] 传输文件/目录到指定目标机器......OK."
+  ssh -T -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=false ${SERVER} "cd ${BUILD_PATH}${PROJECT_NAME}/ && ls -1rt | tac | awk 'FNR > ${KEEP_VERSION_NUM}  {print(\$1);}' | xargs -i rm -rf {}"
+  log "[${SERVER}] [${PROJECT_NAME}] [${PROJECT_VERSION}] 只保留最大版本数，其余删除过老版本......OK."
+
+  # 后置触发任务
+  test -n "$post_transmission" && ssh ${SERVER} ${post_transmission}
+  
+  log "[${SERVER}] [${PROJECT_NAME}] [${PROJECT_VERSION}] 代码传输完成"
+}
+
+function release() {
+  # 前置触发任务
+  test -n "$pre_release" && ssh ${SERVER} ${pre_release}
+
+  # 软链更新
+  ssh ${SERVER} "if [ ! -d \"${WEBSITE_PATH}\" ]; then mkdir -vp ${WEBSITE_PATH}; fi && ln -sfn ${BUILD_PATH}${PROJECT_NAME}/${PROJECT_VERSION} ${BUILD_PATH}${PROJECT_NAME}/current-${PROJECT_NAME}.tmp && mv -fT ${BUILD_PATH}${PROJECT_NAME}/current-${PROJECT_NAME}.tmp ${WEBSITE_PATH}${PROJECT_NAME}"
+  log "[${SERVER}] [${PROJECT_NAME}] [${PROJECT_VERSION}] 软链更新......OK."
+
+  # 后置触发任务
+  test -n "$post_release" && ssh ${SERVER} ${post_release}
+
+  log "[${SERVER}] [${PROJECT_NAME}] [${PROJECT_VERSION}] 代码发布完成"
+}
+
+#
+# Require server arg.
+function require_server() {
+  test -z "$SERVER" && abort "[user@]hostname required"
+}
+
+function main() {
+  log "deploying"
+  transmission
+  release
+  log "successfully deployed"
+}
+
+while test $# -ne 0; do
+  arg=$1; shift
+  case $arg in
+    -h|--help) usage; exit 0 ;;
+    -c|--chdir) log cd $1; cd $1; shift ;;
+    -v|--version) echo $VERSION; exit ;;
+    -b|--build-path) $BUILD_PATH=$1;shift ;;
+    -w|--website-path) $WEBSITE_PATH=$1;shift ;;
+    -n|--keep-version-num) $KEEP_VERSION_NUM=$1;shift ;;
+    -pn|--project-name) PROJECT_NAME=$1; shift ;;
+    -pv|--project-version) PROJECT_VERSION=$1; shift ;;
+    --pre-transmission) pre_transmission=$1; shift ;;
+    --post-transmission) post_transmission=$1; shift ;;
+    --pre-release) pre_release=$1; shift ;;
+    --post-release) post_release=$1; shift ;;
+
+    transmission) require_server; transmission; exit ;;
+    release) require_server; release; exit ;;
+
+    *) SERVER=$arg; ;; 
+  esac
+done
+
+require_server && main

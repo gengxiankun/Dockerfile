@@ -7,7 +7,9 @@ RUN yum install -y epel-release &&\
 
 RUN curl -sSL https://getcomposer.org/installer | php &&\
     mv composer.phar /usr/local/bin/composer &&\
-    composer global require fxp/composer-asset-plugin v1.4.2 -vvv
+    composer global require fxp/composer-asset-plugin v1.4.2 -vvv &&\
+    composer global require "laravel/envoy=~1.0" &&\
+    composer global require hirak/prestissimo
 
 RUN rpm -ivh https://kojipkgs.fedoraproject.org/packages/http-parser/2.7.1/3.el7/x86_64/http-parser-2.7.1-3.el7.x86_64.rpm &&\
 	yum -y install nodejs openssl &&\
@@ -17,9 +19,10 @@ RUN rpm -ivh https://kojipkgs.fedoraproject.org/packages/http-parser/2.7.1/3.el7
 	yum clean all
 
 RUN npm install -g fis3 &&\
-	yum install java-1.8.0-openjdk* -y &&\
 	npm install -g fis3-smarty &&\
 	npm install -g fis-postprocessor-require-async &&\
 	npm install -g fis-parser-jdists
+
+COPY deploy /usr/local/bin/
 
 CMD ["/usr/sbin/init"]
