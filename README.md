@@ -1,7 +1,7 @@
 # dockerfiles
 dockerfiles are used to build centos7 based docker images.
 
-dockerfiles automatically triggers the build process in https://hub.docker.com, so they are always consistent with the image in https://hub.docker.com/r/gengxinakun/.
+dockerfiles automatically triggers the build process in https://hub.docker.com, so they are always consistent with the image in https://hub.docker.com/u/gengxinakun/.
 
 ## container arrangement
 dockerfiles provides docker-compose orchestration files for these images. 
