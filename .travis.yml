@@ -1,0 +1,7 @@
+sudo: required
+
+services:
+  - docker
+
+script:
+- docker build -t gengxiankun/php7.1 php7.1/
