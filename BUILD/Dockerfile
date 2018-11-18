@@ -25,6 +25,4 @@ RUN npm install -g fis3 &&\
 	npm install -g fis-postprocessor-require-async &&\
 	npm install -g fis-parser-jdists
 
-COPY deploy /usr/local/bin/
-
 CMD ["/usr/sbin/init"]
