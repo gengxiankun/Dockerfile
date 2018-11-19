@@ -16,6 +16,7 @@ services:
         working_dir: /data
         environment:
             - MYSQL_ROOT_PASSWORD=root
+            - TZ=Asia/Shanghai
         restart: always
 
     php-fpm:
@@ -27,6 +28,8 @@ services:
         volumes:
             - ../docker-compose_data/php-fpm/www:/www
             - ../docker-compose_data/php-fpm/log:/var/log/php-fpm
+        environment:
+            - TZ=Asia/Shanghai
         working_dir: /www
         links:
             - mysql:mysql
@@ -43,6 +46,8 @@ services:
         volumes_from:
             - php-fpm
         working_dir: /etc/nginx/conf.d
+        environment:
+            - TZ=Asia/Shanghai
         links:
             - mysql:mysql
             - php-fpm:php-fpm
