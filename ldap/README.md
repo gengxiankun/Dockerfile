@@ -1,5 +1,11 @@
-*Usage*
+# LDAP
 
+## build
+```bash
+docker build -t ldap dockerfiles/ldap/
+```
+
+## run
 ```bash
 docker run -d \
  -p 389:389 \
@@ -8,5 +14,5 @@ docker run -d \
  -e LDAP_MANAGER= \
  -e LDAP_PASSWD= \
  --name ldap \
- ldap/
+ ldap
 ```
