@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:6.4.3
+    ports:
+      - 5044:5044
+    volumes:
+      - ../docker-compose_data/logstash/:/usr/share/logstash/pipeline/

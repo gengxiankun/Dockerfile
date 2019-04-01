@@ -4,7 +4,7 @@ services:
 
     mysql:
         container_name: mysql
-        image: daocloud.io/library/mysql:5.6
+        image: daocloud.io/library/mysql
         restart: always
         expose:
             - "3306"
@@ -19,35 +19,32 @@ services:
             - TZ=Asia/Shanghai
         restart: always
 
-    php-fpm:
-        container_name: php-fpm
-        image: gengxiankun/php:7.1-latest
+    redis:
+        container_name: redis
+        image: daocloud.io/library/redis
         restart: always
         expose:
-            - "9000"
+          - "6379"
+        ports:
+          - "6379:6379"
         volumes:
-            - ../docker-compose_data/php-fpm/www:/www
-            - ../docker-compose_data/php-fpm/log:/var/log/php-fpm
-        environment:
-            - TZ=Asia/Shanghai
-        working_dir: /www
-        links:
-            - mysql:mysql
+          - ../docker-compose_data/redis/var_lib_redis:/data
+          - ../docker-compose_data/redis/data:/data
+        command: redis-server --appendonly yes
 
     nginx:
         container_name: nginx
-        image: gengxiankun/nginx:openresty-latest
+        build: ../openresty/
         restart: always
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - ../docker-compose_data/nginx/conf.d:/etc/nginx/conf.d
-        volumes_from:
-            - php-fpm
+            - ../docker-compose_data/nginx/library:/opt/openresty/library
         working_dir: /etc/nginx/conf.d
         environment:
             - TZ=Asia/Shanghai
         links:
             - mysql:mysql
-            - php-fpm:php-fpm
+            - redis:redis
